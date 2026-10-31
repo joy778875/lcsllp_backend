@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import http from 'http';
 import { Server } from 'socket.io';
-import connectDB from './config/db.js';
+import connectDB, { isMongoDBConnected } from './config/db.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 // Route Imports
@@ -68,10 +68,18 @@ app.use(async (req, res, next) => {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
+  const dbConnected = isMongoDBConnected();
   res.json({
     status: 'ok',
     timestamp: new Date(),
     environment: process.env.NODE_ENV || 'development',
+    database: {
+      connected: dbConnected,
+      mode: dbConnected ? 'MongoDB Atlas' : 'Local File Storage',
+      message: dbConnected
+        ? 'MongoDB Atlas is connected and active.'
+        : 'MongoDB is offline. Running in persistent fallback mode.',
+    },
   });
 });
 
