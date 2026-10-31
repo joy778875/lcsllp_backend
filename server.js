@@ -67,7 +67,7 @@ app.use(async (req, res, next) => {
 });
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   const dbConnected = isMongoDBConnected();
   res.json({
     status: 'ok',
@@ -83,17 +83,36 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// API Routes
+// API Routes - Supports both /api/* and /* paths seamlessly
 app.use('/api/admin', adminRoutes);
+app.use('/admin', adminRoutes);
+
 app.use('/api', siteContentRoutes);
+app.use('/', siteContentRoutes);
+
 app.use('/api', bannerRoutes);
+app.use('/', bannerRoutes);
+
 app.use('/api', teamRoutes);
+app.use('/', teamRoutes);
+
 app.use('/api', mapRoutes);
+app.use('/', mapRoutes);
+
 app.use('/api', enquiryRoutes);
+app.use('/', enquiryRoutes);
+
 app.use('/api', notificationRoutes);
+app.use('/', notificationRoutes);
+
 app.use('/api', uploadRoutes);
+app.use('/', uploadRoutes);
+
 app.use('/api', serviceRoutes);
+app.use('/', serviceRoutes);
+
 app.use('/api', blogRoutes);
+app.use('/', blogRoutes);
 
 // Centralized error handler
 app.use(errorHandler);
